@@ -15,16 +15,24 @@ export default class ItemList extends Component {
                 })
             })
     }
-
-    renderItems = (arr) => {
+    renderItems(arr) {
         return arr.map((item) => {
             const {id} = item;
+            const label = this.props.children(item);
 
-            if(!this.props.renderItem) debugger;
-
-            const label = this.props.renderItem(item);
             return (
                 <li
+
+    
+          
+            
+    
+
+          
+          Expand Down
+    
+    
+  
                     className="list-group-item"
                     key={id}
                     onClick={ () => this.props.onItemSelected(id) }
@@ -32,11 +40,9 @@ export default class ItemList extends Component {
                     {label}
                 </li>)
         });
-    };
-
+    }
     render() {
         const {itemList} = this.state;
-  
         if(!itemList) return <Spinner />;
         const items = this.renderItems(itemList);
         return (

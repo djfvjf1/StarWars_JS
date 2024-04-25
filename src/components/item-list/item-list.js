@@ -1,22 +1,34 @@
-import React, {Component} from 'react';
+import React from 'react';
+import ItemList from "../item-list";
+import {withData} from "../hoc-helpers";
+import SwapiService from "../../services/swapi-service";
+const {
+    getAllPeople,
+    getAllStarships,
+    getAllPlanets,
+} = new SwapiService();
 
-import './item-list.css';
 
-export default class ItemList extends Component {
-
-    render() {
+const withChildFunction = (Wrapped, fn) => {
+    return (props) => {
         return (
-            <ul className="item-list list-group">
-                <li className="list-group-item">
-                    Luke Skywalker
-                </li>
-                <li className="list-group-item">
-                    Darth Vader
-                </li>
-                <li className="list-group-item">
-                    R2-D2
-                </li>
-            </ul>
-        );
+            <Wrapped {...props}>
+                {fn}
+            </Wrapped>
+        )
     }
+};
+
+
+const renderName = ({name}) => <span>{name}</span>;
+const renderModelAndName = ({model, name}) => <span>{name} ({model})</span>;
+
+const PersonList = withData(  withChildFunction(ItemList, renderName), getAllPeople  );
+const PlanetList = withData(  withChildFunction(ItemList, renderName), getAllPlanets  );
+const StarshipList = withData(  withChildFunction(ItemList, renderModelAndName), getAllStarships  );
+
+export {
+    PersonList,
+    PlanetList,
+    StarshipList
 }

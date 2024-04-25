@@ -1,34 +1,50 @@
-import React from 'react';
-import ItemList from "../item-list";
-import {withData} from "../hoc-helpers";
-import SwapiService from "../../services/swapi-service";
-const {
-    getAllPeople,
-    getAllStarships,
-    getAllPlanets,
-} = new SwapiService();
+import React, {Component} from 'react';
+import Spinner from "../spinner";
+import SwapiService from '../../services/swapi-service';
+
+import './item-list.css';
 
 
-const withChildFunction = (Wrapped, fn) => {
-    return (props) => {
-        return (
-            <Wrapped {...props}>
-                {fn}
-            </Wrapped>
-        )
+export default class ItemList extends Component {
+
+    state = {
+        itemList: null
+    };
+
+    componentDidMount() {
+        const {getData} = this.props;
+
+        getData()
+            .then( (itemList) => {
+                this.setState({
+                    itemList
+                })
+            })
     }
-};
 
+    renderItems(arr) {
+        return arr.map(({id, name}) => {
+            return (
+                <li
+                    className="list-group-item"
+                    key={id}
+                    onClick={ () => this.props.onItemSelected(id) }
+                >
+                    {name}
+                </li>)
+        });
+    }
 
-const renderName = ({name}) => <span>{name}</span>;
-const renderModelAndName = ({model, name}) => <span>{name} ({model})</span>;
+    render() {
+        const {itemList} = this.state;
+        if(!itemList) return <Spinner />;
 
-const PersonList = withData(  withChildFunction(ItemList, renderName), getAllPeople  );
-const PlanetList = withData(  withChildFunction(ItemList, renderName), getAllPlanets  );
-const StarshipList = withData(  withChildFunction(ItemList, renderModelAndName), getAllStarships  );
+        const items = this.renderItems(itemList);
 
-export {
-    PersonList,
-    PlanetList,
-    StarshipList
+        return (
+            <ul className="item-list list-group">
+                {items}
+            </ul>
+        );
+    }
 }
